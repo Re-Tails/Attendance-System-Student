@@ -37,8 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     Button btn_login;
     FirebaseAuth auth;
     TextView forgot_password;
-    FirebaseUser firebaseUser;
-
 
     //auto login
 //    @Override
