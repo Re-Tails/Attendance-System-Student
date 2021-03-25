@@ -118,6 +118,7 @@
                 android:layout_marginBottom="5dp"
                 android:background="@color/colorBackground"
                 android:text="login"
+                android:backgroundTint="@color/colorBackground"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
