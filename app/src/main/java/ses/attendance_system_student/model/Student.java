@@ -1,20 +1,20 @@
 package ses.attendance_system_student.model;
 
 public class Student {
-    private String id;
+    private String student_id;
     private String UID;
-    private String username;
-    private String email;
+    private String student_name;
+    private String student_email;
 
     public Student() {
     }
 
     public String getId() {
-        return id;
+        return student_id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.student_id = id;
     }
 
     public String getUID() {
@@ -25,26 +25,26 @@ public class Student {
         this.UID = UID;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return student_name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.student_name = name;
     }
 
     public String getEmail() {
-        return email;
+        return student_email;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.student_email = email;
     }
 
-    public Student(String id, String UID, String username, String email) {
-        this.id = id;
+    public Student(String student_id, String UID, String student_name, String student_email) {
+        this.student_id = student_id;
         this.UID = UID;
-        this.username = username;
-        this.email = email;
+        this.student_name = student_name;
+        this.student_email = student_email;
     }
 }
