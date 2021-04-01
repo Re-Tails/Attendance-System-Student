@@ -69,6 +69,9 @@ public class FacialRecActivity extends AppCompatActivity {
     private ImageView mImageView;
     private Button cameraBtn;
     private Button mFaceButton;
+    //skip facial recog
+    private Button mSkip;
+    //end
     private Bitmap mSelectedImage;
     private GraphicOverlay mGraphicOverlay;
     // Max width (portrait mode)
@@ -93,6 +96,14 @@ public class FacialRecActivity extends AppCompatActivity {
         setContentView(R.layout.activity_facial_rec);
 
         mImageView = findViewById(R.id.image_view);
+        mSkip = findViewById(R.id.skip1);
+        mSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), HomePage.class));
+            }
+        });
+
 
         cameraBtn = findViewById(R.id.button_text);
         mFaceButton = findViewById(R.id.button_face);

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,25 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AttendanceSystemStudent">
-         <activity android:name=".LoginActivity">
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".HomePage"></activity>
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
-
-
-         </activity>
-<!--        <activity android:name=".LoginActivity"/>-->
-        <activity android:name=".ResetPasswordActivity"/>
-        <activity android:name=".FacialRecActivity"
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- <activity android:name=".LoginActivity"/> -->
+        <activity android:name=".ResetPasswordActivity" />
+        <activity
+            android:name=".FacialRecActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".LoginActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+            android:screenOrientation="portrait"></activity>
 
-
-
-        </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="ses.attendance_system_student"
