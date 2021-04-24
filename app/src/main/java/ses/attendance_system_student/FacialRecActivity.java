@@ -39,6 +39,14 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 //import com.google.codelab.mlkit.GraphicOverlay.Graphic;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.mlkit.vision.common.InputImage;
@@ -53,6 +61,11 @@ import com.google.mlkit.vision.face.FaceDetectorOptions;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -60,8 +73,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class FacialRecActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+
+    FirebaseUser fuser;
+    private static final String TAG = "Facial REc";
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
@@ -71,9 +94,10 @@ public class FacialRecActivity extends AppCompatActivity {
     private Button mFaceButton;
     //skip facial recog
     private Button mSkip;
+    DatabaseReference refrence;
     //end
     private Bitmap mSelectedImage;
-    private GraphicOverlay mGraphicOverlay;
+//    private GraphicOverlay mGraphicOverlay;
     // Max width (portrait mode)
     private Integer mImageMaxWidth;
     // Max height (portrait mode)
@@ -106,42 +130,43 @@ public class FacialRecActivity extends AppCompatActivity {
 
 
         cameraBtn = findViewById(R.id.button_text);
-        mFaceButton = findViewById(R.id.button_face);
+//        mFaceButton = findViewById(R.id.button_face);
 
-        mGraphicOverlay = findViewById(R.id.graphic_overlay);
-        mFaceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onItemSelected(currentPhotoPath);
-                runFaceContourDetection();
-            }
-        });
+//        mGraphicOverlay = findViewById(R.id.graphic_overlay);
+//        mFaceButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                onItemSelected(currentPhotoPath);
+////                runFaceContourDetection();
+//            }
+//        });
 
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog alertDialog = new AlertDialog.Builder(FacialRecActivity.this).create();
-                alertDialog.setTitle("Attach Picture");
-                alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_NEUTRAL, "GALLERY", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(gallery, GALLERY_REQUEST_CODE);
-                    }
-
-                });
-                alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, "Camera", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+//                AlertDialog alertDialog = new AlertDialog.Builder(FacialRecActivity.this).create();
+//                alertDialog.setTitle("Attach Picture");
+//                alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_NEUTRAL, "GALLERY", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                        startActivityForResult(gallery, GALLERY_REQUEST_CODE);
+//                    }
+//
+//                });
+//                alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, "Camera", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
                         askCameraPermissions();
-                    }
-
-                });
-                alertDialog.show();
-
+//                    }
+//
+//                });
+//                alertDialog.show();
+//
 
 
             }
@@ -151,144 +176,6 @@ public class FacialRecActivity extends AppCompatActivity {
 
     }
 
-    private void runFaceContourDetection() {
-        InputImage image = InputImage.fromBitmap(mSelectedImage, 0);
-        FaceDetectorOptions options =
-                new FaceDetectorOptions.Builder()
-                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-                        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                        .build();
-
-        mFaceButton.setEnabled(false);
-        FaceDetector detector = FaceDetection.getClient(options);
-        detector.process(image)
-                .addOnSuccessListener(
-                        new OnSuccessListener<List<Face>>() {
-                            @Override
-                            public void onSuccess(List<Face> faces) {
-                                mFaceButton.setEnabled(true);
-                                processFaceContourDetectionResult(faces);
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(Exception e) {
-                                // Task failed with an exception
-                                mFaceButton.setEnabled(true);
-                                e.printStackTrace();
-                            }
-                        });
-
-    }
-
-    private void processFaceContourDetectionResult(List<Face> faces) {
-        // Task completed successfully
-        if (faces.size() == 0) {
-            showToast("No face found");
-            return;
-        }
-        mGraphicOverlay.clear();
-        for (int i = 0; i < faces.size(); ++i) {
-            Face face = faces.get(i);
-            FaceContourGraphic faceGraphic = new FaceContourGraphic(mGraphicOverlay);
-            mGraphicOverlay.add(faceGraphic);
-            faceGraphic.updateFace(face);
-        }
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Functions for loading images from app assets.
-
-    // Returns max image width, always for portrait mode. Caller needs to swap width / height for
-    // landscape mode.
-    private Integer getImageMaxWidth() {
-        if (mImageMaxWidth == null) {
-            // Calculate the max width in portrait mode. This is done lazily since we need to
-            // wait for
-            // a UI layout pass to get the right values. So delay it to first time image
-            // rendering time.
-            mImageMaxWidth = mImageView.getWidth();
-        }
-
-        return mImageMaxWidth;
-    }
-
-    // Returns max image height, always for portrait mode. Caller needs to swap width / height for
-    // landscape mode.
-    private Integer getImageMaxHeight() {
-        if (mImageMaxHeight == null) {
-            // Calculate the max width in portrait mode. This is done lazily since we need to
-            // wait for
-            // a UI layout pass to get the right values. So delay it to first time image
-            // rendering time.
-            mImageMaxHeight =
-                    mImageView.getHeight();
-        }
-
-        return mImageMaxHeight;
-    }
-
-    // Gets the targeted width / height.
-    private Pair<Integer, Integer> getTargetedWidthHeight() {
-        int targetWidth;
-        int targetHeight;
-        int maxWidthForPortraitMode = getImageMaxWidth();
-        int maxHeightForPortraitMode = getImageMaxHeight();
-        targetWidth = maxWidthForPortraitMode;
-        targetHeight = maxHeightForPortraitMode;
-        return new Pair<>(targetWidth, targetHeight);
-    }
-
-    public void onItemSelected( String pp) {
-        mGraphicOverlay.clear();
-//        try (Image im = new ImageFormat(f)) {
-//        }
-        mSelectedImage = BitmapFactory.decodeFile(currentPhotoPath);
-//        mSelectedImage = getBitmapFromAsset(this, pp);
-        if (mSelectedImage != null) {
-            // Get the dimensions of the View
-            Pair<Integer, Integer> targetedSize = getTargetedWidthHeight();
-
-            int targetWidth = targetedSize.first;
-            int maxHeight = targetedSize.second;
-
-            // Determine how much to scale down the image
-            float scaleFactor =
-                    Math.max(
-                            (float) mSelectedImage.getWidth() / (float) targetWidth,
-                            (float) mSelectedImage.getHeight() / (float) maxHeight);
-
-            Bitmap resizedBitmap =
-                    Bitmap.createScaledBitmap(
-                            mSelectedImage,
-                            (int) (mSelectedImage.getWidth() / scaleFactor),
-                            (int) (mSelectedImage.getHeight() / scaleFactor),
-                            true);
-
-            mImageView.setImageBitmap(resizedBitmap);
-            mSelectedImage = resizedBitmap;
-        }
-    }
-
-    public static Bitmap getBitmapFromAsset(Context context, String filePath) {
-        AssetManager assetManager = context.getAssets();
-
-        InputStream is;
-        Bitmap bitmap = null;
-        try {
-            is = assetManager.open(filePath);
-            bitmap = BitmapFactory.decodeStream(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return bitmap;
-    }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //USING CAMERA FUNCTIONS
 
     private void askCameraPermissions() {
@@ -327,38 +214,40 @@ public class FacialRecActivity extends AppCompatActivity {
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 this.sendBroadcast(mediaScanIntent);
-//                uploadImageToFirebase(f.getName(), contentUri);
+                uploadImageToFirebase(f.getName(), contentUri);
 
 
             }
 
         }
 
-        if (requestCode == GALLERY_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                Uri contentUri = data.getData();
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "JPEG_" + timeStamp + "." + getFileExt(contentUri);
-                Log.d("tag", "onActivityResult: Gallery Image Uri:  " + imageFileName);
-                mImageView.setImageURI(contentUri);
+//        if (requestCode == GALLERY_REQUEST_CODE) {
+//            if (resultCode == Activity.RESULT_OK) {
+//                Uri contentUri = data.getData();
+//                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//                String imageFileName = "JPEG_" + timeStamp + "." + getFileExt(contentUri);
+//                Log.d("tag", "onActivityResult: Gallery Image Uri:  " + imageFileName);
+//                mImageView.setImageURI(contentUri);
 //                uploadImageToFirebase(imageFileName, contentUri);
-
-            }
-
-        }
+//
+//            }
+//
+//        }
 
     }
 
 
-    private String getFileExt(Uri contentUri) {
-        ContentResolver c = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(c.getType(contentUri));
-    }
+//    private String getFileExt(Uri contentUri) {
+//        ContentResolver c = getContentResolver();
+//        MimeTypeMap mime = MimeTypeMap.getSingleton();
+//        return mime.getExtensionFromMimeType(c.getType(contentUri));
+//    }
 
 
     private File createImageFile() throws IOException {
         // Create an image file name
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        String UID = fuser.getUid();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -401,5 +290,221 @@ public class FacialRecActivity extends AppCompatActivity {
             }
         }
     }
+    private void uploadImageToFirebase(String name, Uri contentUri) {
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        String UID = fuser.getUid();
+        final StorageReference image = storageReference.child("pictures/"+UID+"/" + name);
+        image.putFile(contentUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                image.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
+                        Log.d("TAG", "onSuccess: download uri is " + image.getDownloadUrl());
+                        Toast.makeText(FacialRecActivity.this, "Image Is Uploaded.", Toast.LENGTH_SHORT).show();
+
+                        OkHttpClient client = new OkHttpClient();
+
+                        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+                        String encoded = "";
+                        try {
+                             encoded = URLEncoder.encode(uri.toString(), "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+//                            decoded = uri.toString();
+                        }
+
+                        Log.d("encoded", "onSuccess: "+ encoded);
+                        RequestBody body = RequestBody.create(mediaType, "photo="+encoded);
+                        refrence = FirebaseDatabase.getInstance().getReference("Student").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("facerec");
+//                        final int[] val = {Integer.parseInt(null)};
+//                        refrence.addValueEventListener(new ValueEventListener() {
+//    @Override
+//    public void onDataChange(@NonNull DataSnapshot snapshot) {
+// val[0] = snapshot.getValue(Integer.class);
+//        Log.d(TAG, "onDataChange: "+ val[0]);
+//    }
+//
+//    @Override
+//    public void onCancelled(@NonNull DatabaseError error) {
+//
+//    }
+//});
+                        Log.d(TAG, "onSuccess: "+ 195294);
+                        Request request = new Request.Builder()
+                                .url("https://luxand-cloud-face-recognition.p.rapidapi.com/photo/verify/"+195294)
+                                .post(body)
+                                .addHeader("content-type", "application/x-www-form-urlencoded")
+                                .addHeader("x-rapidapi-key", "9ff79279cemsh25a154e23e359f8p18046ajsn4558084a9605")
+                                .addHeader("x-rapidapi-host", "luxand-cloud-face-recognition.p.rapidapi.com")
+                                .build();
+
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                e.printStackTrace();
+                            }
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                if (response.isSuccessful()) {
+                                    final String myResponse = response.body().string();
+                                    Log.d("TAG", "run: "+ myResponse);
+                                }
+                            }
+                        });
+                    }
+                });
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(FacialRecActivity.this, "Upload Failled.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
 }
+
+// Face Detection Code
+//    private void runFaceContourDetection() {
+//        InputImage image = InputImage.fromBitmap(mSelectedImage, 0);
+//        FaceDetectorOptions options =
+//                new FaceDetectorOptions.Builder()
+//                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+//                        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+//                        .build();
+//
+//        mFaceButton.setEnabled(false);
+//        FaceDetector detector = FaceDetection.getClient(options);
+//        detector.process(image)
+//                .addOnSuccessListener(
+//                        new OnSuccessListener<List<Face>>() {
+//                            @Override
+//                            public void onSuccess(List<Face> faces) {
+//                                mFaceButton.setEnabled(true);
+//                                processFaceContourDetectionResult(faces);
+//                            }
+//                        })
+//                .addOnFailureListener(
+//                        new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(Exception e) {
+//                                // Task failed with an exception
+//                                mFaceButton.setEnabled(true);
+//                                e.printStackTrace();
+//                            }
+//                        });
+//
+//    }
+//
+//    private void processFaceContourDetectionResult(List<Face> faces) {
+//        // Task completed successfully
+//        if (faces.size() == 0) {
+//            showToast("No face found");
+//            return;
+//        }
+//        mGraphicOverlay.clear();
+//        for (int i = 0; i < faces.size(); ++i) {
+//            Face face = faces.get(i);
+//            FaceContourGraphic faceGraphic = new FaceContourGraphic(mGraphicOverlay);
+//            mGraphicOverlay.add(faceGraphic);
+//            faceGraphic.updateFace(face);
+//        }
+//    }
+//
+//    private void showToast(String message) {
+//        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+//    }
+//
+//    // Functions for loading images from app assets.
+//
+//    // Returns max image width, always for portrait mode. Caller needs to swap width / height for
+//    // landscape mode.
+//    private Integer getImageMaxWidth() {
+//        if (mImageMaxWidth == null) {
+//            // Calculate the max width in portrait mode. This is done lazily since we need to
+//            // wait for
+//            // a UI layout pass to get the right values. So delay it to first time image
+//            // rendering time.
+//            mImageMaxWidth = mImageView.getWidth();
+//        }
+//
+//        return mImageMaxWidth;
+//    }
+//
+//    // Returns max image height, always for portrait mode. Caller needs to swap width / height for
+//    // landscape mode.
+//    private Integer getImageMaxHeight() {
+//        if (mImageMaxHeight == null) {
+//            // Calculate the max width in portrait mode. This is done lazily since we need to
+//            // wait for
+//            // a UI layout pass to get the right values. So delay it to first time image
+//            // rendering time.
+//            mImageMaxHeight =
+//                    mImageView.getHeight();
+//        }
+//
+//        return mImageMaxHeight;
+//    }
+//
+//    // Gets the targeted width / height.
+//    private Pair<Integer, Integer> getTargetedWidthHeight() {
+//        int targetWidth;
+//        int targetHeight;
+//        int maxWidthForPortraitMode = getImageMaxWidth();
+//        int maxHeightForPortraitMode = getImageMaxHeight();
+//        targetWidth = maxWidthForPortraitMode;
+//        targetHeight = maxHeightForPortraitMode;
+//        return new Pair<>(targetWidth, targetHeight);
+//    }
+//
+//    public void onItemSelected( String pp) {
+//        mGraphicOverlay.clear();
+////        try (Image im = new ImageFormat(f)) {
+////        }
+//        mSelectedImage = BitmapFactory.decodeFile(currentPhotoPath);
+////        mSelectedImage = getBitmapFromAsset(this, pp);
+//        if (mSelectedImage != null) {
+//            // Get the dimensions of the View
+//            Pair<Integer, Integer> targetedSize = getTargetedWidthHeight();
+//
+//            int targetWidth = targetedSize.first;
+//            int maxHeight = targetedSize.second;
+//
+//            // Determine how much to scale down the image
+//            float scaleFactor =
+//                    Math.max(
+//                            (float) mSelectedImage.getWidth() / (float) targetWidth,
+//                            (float) mSelectedImage.getHeight() / (float) maxHeight);
+//
+//            Bitmap resizedBitmap =
+//                    Bitmap.createScaledBitmap(
+//                            mSelectedImage,
+//                            (int) (mSelectedImage.getWidth() / scaleFactor),
+//                            (int) (mSelectedImage.getHeight() / scaleFactor),
+//                            true);
+//
+//            mImageView.setImageBitmap(resizedBitmap);
+//            mSelectedImage = resizedBitmap;
+//        }
+//    }
+//
+//    public static Bitmap getBitmapFromAsset(Context context, String filePath) {
+//        AssetManager assetManager = context.getAssets();
+//
+//        InputStream is;
+//        Bitmap bitmap = null;
+//        try {
+//            is = assetManager.open(filePath);
+//            bitmap = BitmapFactory.decodeStream(is);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return bitmap;
+//    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

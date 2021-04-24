@@ -25,9 +25,8 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity
             android:name=".FacialRecActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
