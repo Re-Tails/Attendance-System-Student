@@ -12,18 +12,27 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.media.ImageReader;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
@@ -32,6 +41,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -82,15 +92,18 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class FacialRecActivity extends AppCompatActivity {
-
+    boolean recognized= false;
+    AnimatedVectorDrawableCompat avd;
+    AnimatedVectorDrawable avd2;
     FirebaseUser fuser;
+    ImageView done;
     private static final String TAG = "Facial REc";
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
     String currentPhotoPath;
     private ImageView mImageView;
-    private Button cameraBtn;
+    private ImageButton cameraBtn;
     private Button mFaceButton;
     //skip facial recog
     private Button mSkip;
@@ -113,12 +126,12 @@ public class FacialRecActivity extends AppCompatActivity {
      */
     private static final int DIM_IMG_SIZE_X = 224;
     private static final int DIM_IMG_SIZE_Y = 224;
-
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facial_rec);
-
+        done = findViewById(R.id.done);
         mImageView = findViewById(R.id.image_view);
         mSkip = findViewById(R.id.skip1);
         mSkip.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +185,7 @@ public class FacialRecActivity extends AppCompatActivity {
             }
 
         });
-
+//animation();
 
     }
 
@@ -350,6 +363,12 @@ public class FacialRecActivity extends AppCompatActivity {
                                 if (response.isSuccessful()) {
                                     final String myResponse = response.body().string();
                                     Log.d("TAG", "run: "+ myResponse);
+                                    if(myResponse.contains("success")){
+                                    recognized = true;
+                                   } animation();
+//                                    } else {
+//                                        Toast.makeText(FacialRecActivity.this, "Face Not Verefied, Please try again.", Toast.LENGTH_SHORT).show();
+//                                    }
                                 }
                             }
                         });
@@ -362,6 +381,34 @@ public class FacialRecActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(FacialRecActivity.this, "Upload Failled.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void animation() {
+        new Handler(Looper.getMainLooper()).post(new Runnable(){
+            @Override
+            public void run() {
+//                done.setImageDrawable(getResources().getDrawable(R.drawable.avd_done));
+        if(recognized){
+done.setImageResource(R.drawable.animated_vector_check);
+            ((Animatable) done.getDrawable()).start();
+            new CountDownTimer(3000, 1000) {
+                //
+//            @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+            startActivity(new Intent(getApplicationContext(), HomePage.class));
+            finish();}}.start();
+        }else{
+            done.setImageResource(R.drawable.animated_vector_cross);
+            ((Animatable) done.getDrawable()).start();
+        }
             }
         });
 
