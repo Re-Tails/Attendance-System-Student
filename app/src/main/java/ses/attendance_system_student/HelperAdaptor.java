@@ -17,14 +17,23 @@ import java.util.List;
 
 public class HelperAdaptor extends RecyclerView.Adapter {
 
-    List<String> infoCollectList;
+    List<InfoCollect> infoCollectList;
     private Context mContext;
     private ArrayList<InfoCollect> list;
-    public HelperAdaptor(List<String> infoCollectList) {
+    public HelperAdaptor(List<InfoCollect> infoCollectList, Context mContext) {
         this.infoCollectList = infoCollectList;
         this.mContext= mContext;
     }
-
+    public class ViewHolderClass extends RecyclerView.ViewHolder{
+        TextView sub1, sub2;
+        ImageView menuPopup;
+        public ViewHolderClass(@NonNull View itemView) {
+            super(itemView);
+            sub1=itemView.findViewById(R.id.sub1);
+            menuPopup = itemView.findViewById(R.id.menuMore);
+            // sub2=itemView.findViewById(R.id.sub2);
+        }
+    }
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -37,10 +46,11 @@ public class HelperAdaptor extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ViewHolderClass viewHolderClass=(ViewHolderClass)holder;
-        String infoCollect=infoCollectList.get(position);
-        viewHolderClass.sub1.setText(infoCollect);
-       // viewHolderClass.sub2.setText(infoCollect);
-        Log.v("test4", infoCollect);
+        //List<InfoCollect> subjectList;
+        InfoCollect infoCollect=infoCollectList.get(position);
+        viewHolderClass.sub1.setText(infoCollectList.get(position).getStudentSubject1());
+        // viewHolderClass.sub2.setText(infoCollect);
+        Log.v("test4", String.valueOf(infoCollect));
         ((ViewHolderClass) holder).menuPopup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,15 +68,6 @@ public class HelperAdaptor extends RecyclerView.Adapter {
         return infoCollectList.size();
     }
 
-    public class ViewHolderClass extends RecyclerView.ViewHolder{
-        TextView sub1, sub2;
-        ImageView menuPopup;
-        public ViewHolderClass(@NonNull View itemView) {
-            super(itemView);
-            sub1=itemView.findViewById(R.id.sub1);
-            menuPopup = itemView.findViewById(R.id.menuMore);
-           // sub2=itemView.findViewById(R.id.sub2);
-        }
-    }
+
 
 }

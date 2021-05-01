@@ -1,6 +1,7 @@
 package ses.attendance_system_student;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +31,8 @@ public class HomePage extends AppCompatActivity {
     private FirebaseAuth bAuth;
     String currentUserID;
 
-    List<String> infoCollect;
+    // List<InfoCollect> infoCollect;
+    ArrayList<InfoCollect> infoCollectList;
     RecyclerView recyclerView;
     HelperAdaptor helperAdaptor;
     @Override
@@ -49,17 +52,31 @@ public class HomePage extends AppCompatActivity {
 
         recyclerView= findViewById(R.id.subjectList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        infoCollect= new ArrayList<>();
-        mSubjectRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        infoCollectList= new ArrayList<>();
+
+
+        mSubjectRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot ds:snapshot.getChildren()) {
-                    String data=ds.getValue(String.class);
-                    infoCollect.add(data);
-                  //  Log.v("test add", String.valueOf(infoCollect.add(data)));
-                }
-                helperAdaptor = new HelperAdaptor((infoCollect));
-                recyclerView.setAdapter(helperAdaptor);
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                InfoCollect infoCollect = snapshot.getValue(InfoCollect.class);
+                infoCollectList.add(infoCollect);
+                helperAdaptor.notifyItemInserted(infoCollectList.size());
+                Log.v("Subject", "loaded");
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
             }
 
             @Override
@@ -67,6 +84,9 @@ public class HomePage extends AppCompatActivity {
 
             }
         });
+
+
+
 
     }
 }
