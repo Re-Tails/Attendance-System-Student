@@ -1,7 +1,6 @@
 package ses.attendance_system_student;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -14,11 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class HelperAdaptor extends RecyclerView.Adapter {
@@ -35,7 +33,8 @@ public class HelperAdaptor extends RecyclerView.Adapter {
     private DatabaseReference mSubjectRef, mJoinRef, mStudentRef;
     InfoCollect studentJoin;
     private String currentstudentid, currentUserID, Joined;
-    private ArrayList<InfoCollect> list;
+    private ArrayList<InfoCollect> dlist = new ArrayList<>();
+    private ArrayList<sessiondata> list = new ArrayList<>();
     private FirebaseAuth bAuth;
 
 
@@ -73,6 +72,17 @@ public class HelperAdaptor extends RecyclerView.Adapter {
         return viewHolderClass;
     }
 
+    private static class sessiondata{
+        public String date, time, endTime;
+
+        public sessiondata(String date, String time, String endTime){
+            this.date = date;
+            this.time = time;
+            this.endTime = endTime;
+        }
+    }
+
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ViewHolderClass viewHolderClass=(ViewHolderClass)holder;
@@ -97,6 +107,18 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if(snapshot.exists()){
+                                            Iterator<DataSnapshot> items = snapshot.getChildren().iterator();
+                                            list.clear();
+                                            while (items.hasNext()) {
+                                                DataSnapshot item = items.next();
+                                                String date, time, endTime;
+                                                date = item.child("session_date").getValue().toString();
+                                                time = item.child("session_start_time").getValue().toString();
+                                                endTime = item.child("session_end_time").getValue().toString();
+                                                sessiondata entry = new sessiondata(date, time, endTime);
+                                                list.add(entry);
+                                                Log.v("entries", String.valueOf(list));
+                                            }
                                             mJoinRef= FirebaseDatabase.getInstance().getReference().child("Join").child(infoCollect.first).child("student_id");
                                             Joined = snapshot.getValue().toString();
                                             if(Joined == currentstudentid) {
