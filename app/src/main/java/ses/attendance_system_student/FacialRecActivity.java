@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -37,12 +38,15 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -104,6 +108,7 @@ public class FacialRecActivity extends AppCompatActivity {
     String currentPhotoPath;
     private ImageView mImageView;
     private ImageButton cameraBtn;
+    ProgressBar progressBar;
     private Button mFaceButton;
     //skip facial recog
     private Button mSkip;
@@ -131,8 +136,14 @@ public class FacialRecActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facial_rec);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+       progressBar = (ProgressBar)findViewById(R.id.spin_kit);
         done = findViewById(R.id.done);
         mImageView = findViewById(R.id.image_view);
+        mImageView.setClipToOutline(true);
         mSkip = findViewById(R.id.skip1);
         mSkip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,8 +230,11 @@ public class FacialRecActivity extends AppCompatActivity {
 
         if (requestCode == CAMERA_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+                progressbarworks();
                 f = new File(currentPhotoPath);
                 mImageView.setImageURI(Uri.fromFile(f));
+                mImageView.setClipToOutline(true);
+//                mImageView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 Log.d("tag", "ABsolute Url of Image is " + Uri.fromFile(f));
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -234,18 +248,6 @@ public class FacialRecActivity extends AppCompatActivity {
 
         }
 
-//        if (requestCode == GALLERY_REQUEST_CODE) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                Uri contentUri = data.getData();
-//                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//                String imageFileName = "JPEG_" + timeStamp + "." + getFileExt(contentUri);
-//                Log.d("tag", "onActivityResult: Gallery Image Uri:  " + imageFileName);
-//                mImageView.setImageURI(contentUri);
-//                uploadImageToFirebase(imageFileName, contentUri);
-//
-//            }
-//
-//        }
 
     }
 
@@ -303,6 +305,12 @@ public class FacialRecActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void progressbarworks() {
+        progressBar.setVisibility(View.VISIBLE);
+done.setVisibility(View.GONE);
+    }
+
     private void uploadImageToFirebase(String name, Uri contentUri) {
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         String UID = fuser.getUid();
@@ -390,8 +398,11 @@ public class FacialRecActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).post(new Runnable(){
             @Override
             public void run() {
+                progressBar.setVisibility(View.GONE);
+                done.setVisibility(View.VISIBLE);
 //                done.setImageDrawable(getResources().getDrawable(R.drawable.avd_done));
         if(recognized){
+
 done.setImageResource(R.drawable.animated_vector_check);
             ((Animatable) done.getDrawable()).start();
             new CountDownTimer(3000, 1000) {
