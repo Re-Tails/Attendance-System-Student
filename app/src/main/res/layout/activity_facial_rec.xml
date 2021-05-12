@@ -5,59 +5,98 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorSplashText"
+    android:fitsSystemWindows="true"
     tools:context=".FacialRecActivity">
 
 
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <ImageView
+            android:id="@+id/imghexagon"
+            android:layout_width="140dp"
+            android:layout_height="212dp"
+            android:layout_gravity="right"
+            android:contentDescription=""
+            android:scaleType="fitXY"
+            android:src="@drawable/hexagone1" />
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="120dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/hexagone2" />
+
+
+        <!--    <ses.attendance_system_student.GraphicOverlay-->
+        <!--        android:id="@+id/graphic_overlay"-->
+        <!--        android:layout_width="fill_parent"-->
+        <!--        android:layout_height="fill_parent"-->
+        <!--        android:layout_alignParentStart="true"-->
+        <!--        app:layout_constraintBottom_toBottomOf="@id/image_view"-->
+        <!--        app:layout_constraintHorizontal_bias="1.0"-->
+        <!--        app:layout_constraintLeft_toLeftOf="@id/image_view"-->
+        <!--        app:layout_constraintRight_toRightOf="@id/image_view"-->
+        <!--        app:layout_constraintTop_toTopOf="@id/image_view"-->
+        <!--        app:layout_constraintVertical_bias="0.0" />-->
+
+        <!--    <Button-->
+        <!--        android:id="@+id/button_face"-->
+        <!--        android:layout_width="184dp"-->
+        <!--        android:layout_height="48dp"-->
+        <!--        android:layout_marginEnd="16dp"-->
+        <!--        android:text="Find Face"-->
+        <!--        android:textColor="@color/colorSplashText"-->
+        <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        app:layout_constraintLeft_toRightOf="@id/button_text" />-->
+
+        <!--    <Button-->
+
+        <!--        android:id="@+id/button_text"-->
+        <!--        android:layout_width="150dp"-->
+        <!--        android:layout_height="150dp"-->
+        <!--        android:layout_marginEnd="108dp"-->
+        <!--        android:layout_marginBottom="88dp"-->
+        <!--        android:text="Take Picture"-->
+        <!--        android:textColor="@color/colorSplashText"-->
+        <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--        android:background="@drawable/round_button"-->
+        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        app:layout_constraintLeft_toLeftOf="parent" />-->
+
+    </FrameLayout>
+
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="409dp"
-        android:layout_height="543dp"
-        android:layout_marginBottom="54dp"
-        android:contentDescription=""
-        android:scaleType="fitStart"
+        android:layout_width="381dp"
+        android:layout_height="376dp"
 
+        android:layout_marginTop="15dp"
+
+        android:background="@drawable/white_rounded_corner"
+        android:contentDescription=""
+
+
+
+        android:src="@drawable/selfie"
         app:layout_constraintBottom_toTopOf="@+id/button_text"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
-
-<!--    <ses.attendance_system_student.GraphicOverlay-->
-<!--        android:id="@+id/graphic_overlay"-->
-<!--        android:layout_width="fill_parent"-->
-<!--        android:layout_height="fill_parent"-->
-<!--        android:layout_alignParentStart="true"-->
-<!--        app:layout_constraintBottom_toBottomOf="@id/image_view"-->
-<!--        app:layout_constraintHorizontal_bias="1.0"-->
-<!--        app:layout_constraintLeft_toLeftOf="@id/image_view"-->
-<!--        app:layout_constraintRight_toRightOf="@id/image_view"-->
-<!--        app:layout_constraintTop_toTopOf="@id/image_view"-->
-<!--        app:layout_constraintVertical_bias="0.0" />-->
-
-    <!--    <Button-->
-<!--        android:id="@+id/button_face"-->
-<!--        android:layout_width="184dp"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:text="Find Face"-->
-<!--        android:textColor="@color/colorSplashText"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintLeft_toRightOf="@id/button_text" />-->
-
-<!--    <Button-->
-
-<!--        android:id="@+id/button_text"-->
-<!--        android:layout_width="150dp"-->
-<!--        android:layout_height="150dp"-->
-<!--        android:layout_marginEnd="108dp"-->
-<!--        android:layout_marginBottom="88dp"-->
-<!--        android:text="Take Picture"-->
-<!--        android:textColor="@color/colorSplashText"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        android:background="@drawable/round_button"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent" />-->
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/button_text"
@@ -66,37 +105,48 @@
         android:layout_marginBottom="120dp"
         android:layout_weight="1"
         android:adjustViewBounds="true"
-        android:background="@drawable/round_button"
+        android:background="@drawable/white_hexagone"
         android:padding="20dp"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent" />
 
+        <Button
+            android:id="@+id/skip1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="48dp"
+            android:text="skip"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/image_view"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.913" />
+
     <ImageView
         android:id="@+id/done"
         android:layout_width="124dp"
         android:layout_height="86dp"
+        android:src="@drawable/ic_baseline_photo_camera_24"
         app:layout_constraintBottom_toBottomOf="@+id/button_text"
         app:layout_constraintEnd_toEndOf="@+id/button_text"
         app:layout_constraintStart_toStartOf="@+id/button_text"
-        app:layout_constraintTop_toTopOf="@+id/button_text"
-       android:src="@drawable/ic_baseline_photo_camera_24" />
+        app:layout_constraintTop_toTopOf="@+id/button_text" />
 
-    <Button
-        android:id="@+id/skip1"
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/spin_kit"
+        style="@style/SpinKitView.Small.Circle"
+        android:layout_width="142dp"
+        android:layout_height="92dp"
+        android:layout_gravity="center"
         android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="48dp"
-        android:text="skip"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/image_view"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.913" />
-
+        app:SpinKit_Color="#de5972"
+        app:layout_constraintBottom_toBottomOf="@+id/button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_text"
+        app:layout_constraintStart_toStartOf="@+id/button_text"
+        app:layout_constraintTop_toTopOf="@+id/button_text" />
 </androidx.constraintlayout.widget.ConstraintLayout>

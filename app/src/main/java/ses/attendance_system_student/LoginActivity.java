@@ -4,10 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -33,8 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar loadingProgressBar;
     private RelativeLayout rootView, afterAnimationView;
 
-    TextInputEditText email, password;
-    Button btn_login;
+    EditText email, password;
+    FrameLayout btn_login;
     FirebaseAuth auth;
     TextView forgot_password;
 
@@ -56,30 +59,34 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
        //animation
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         //animation
-        initViews();
-        new CountDownTimer(5000, 1000) {
-            //
+//        initViews();
+//        new CountDownTimer(5000, 1000) {
+//            //
+////            @Override
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
 //            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                bookITextView.setVisibility(View.GONE);
-                loadingProgressBar.setVisibility(View.GONE);
-                rootView.setBackgroundColor(ContextCompat.getColor(LoginActivity    .this, R.color.colorSplashText));
-                bookIconImageView.setImageResource(R.drawable.utsblacklogo);
-//                loginbtn.setBackgroundColor(R.drawable.button_drawable);
-                startAnimation();
-            }
-        }.start();
+//            public void onFinish() {
+//                bookITextView.setVisibility(View.GONE);
+//                loadingProgressBar.setVisibility(View.GONE);
+//                rootView.setBackgroundColor(ContextCompat.getColor(LoginActivity    .this, R.color.colorSplashText));
+//                bookIconImageView.setImageResource(R.drawable.utsblacklogo);
+////                loginbtn.setBackgroundColor(R.drawable.button_drawable);
+//                startAnimation();
+//            }
+//        }.start();
         //authentication start
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
@@ -131,11 +138,11 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     private void initViews() {
-        bookIconImageView = findViewById(R.id.bookIconImageView);
-        bookITextView = findViewById(R.id.bookITextView);
-        loadingProgressBar = findViewById(R.id.loadingProgressBar);
-        rootView = findViewById(R.id.rootView);
-        afterAnimationView = findViewById(R.id.afterAnimationView);
+//        bookIconImageView = findViewById(R.id.bookIconImageView);
+//        bookITextView = findViewById(R.id.bookITextView);
+//        loadingProgressBar = findViewById(R.id.loadingProgressBar);
+//        rootView = findViewById(R.id.rootView);
+//        afterAnimationView = findViewById(R.id.afterAnimationView);
 
     }
     private void startAnimation() {
