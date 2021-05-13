@@ -14,8 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AttendanceSystemStudent">
-        <activity android:name=".HomePage"></activity>
-        <activity android:name=".LoginActivity" >
+        <activity android:name=".CodeAuthActivity"></activity>
+        <activity android:name=".HomePage" />
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,8 +26,7 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity
             android:name=".FacialRecActivity"
-            android:parentActivityName=".LoginActivity"
-            />
+            android:parentActivityName=".LoginActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -58,7 +58,7 @@ public class HomePage extends AppCompatActivity {
                     infoCollect.add(data);
                     //  Log.v("test add", String.valueOf(infoCollect.add(data)));
                 }
-                helperAdaptor = new HelperAdaptor((infoCollect), getApplicationContext());
+                helperAdaptor = new HelperAdaptor((infoCollect), HomePage.this);
                 recyclerView.setAdapter(helperAdaptor);
             }
 

@@ -1,6 +1,8 @@
 package ses.attendance_system_student;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -167,9 +169,16 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                                             } else if (mark == 1) {
                                                 // mJoinRef.setValue(currentstudentid);
                                                // Log.v("joining successful", "worked");
-                                                mJoinRef= FirebaseDatabase.getInstance().getReference().child("Session").child(infoCollect.first).child(masterID).child("session_students");
-                                                mJoinRef.child(currentstudentid).setValue(currentStudentname);
+                                                //mJoinRef= FirebaseDatabase.getInstance().getReference().child("Session").child(infoCollect.first).child(masterID).child("session_students");
+                                                //mJoinRef.child(currentstudentid).setValue(currentStudentname);
                                                 mark = 0;
+                                                Intent intent = new Intent(mContext, CodeAuthActivity.class);
+                                                intent.putExtra("session_id", masterID);
+                                                intent.putExtra("subject", infoCollect.first);
+                                                intent.putExtra("student_id", currentstudentid);
+                                                intent.putExtra("student_name", currentStudentname);
+
+                                                mContext.startActivity(intent);
                                             }
 
 
@@ -264,5 +273,6 @@ public class HelperAdaptor extends RecyclerView.Adapter {
             // sub2=itemView.findViewById(R.id.sub2);
         }
     }
+
 
 }
