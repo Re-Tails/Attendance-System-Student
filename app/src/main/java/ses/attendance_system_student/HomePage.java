@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -28,8 +29,8 @@ public class HomePage extends AppCompatActivity {
     private DatabaseReference mSubjectRef;
     private FirebaseAuth bAuth;
     String currentUserID;
-
-    List<String> infoCollect;
+    Intent intent;
+    List<Pair<String, String>> infoCollect;
     RecyclerView recyclerView;
     HelperAdaptor helperAdaptor;
     @Override
@@ -38,7 +39,6 @@ public class HomePage extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
 
         bAuth = FirebaseAuth.getInstance();
-
 
         if(bAuth.getCurrentUser() == null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
@@ -54,11 +54,11 @@ public class HomePage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot ds:snapshot.getChildren()) {
-                    String data=ds.getValue(String.class);
+                    Pair data = new Pair(ds.getKey(), ds.getValue());
                     infoCollect.add(data);
-                  //  Log.v("test add", String.valueOf(infoCollect.add(data)));
+                    //  Log.v("test add", String.valueOf(infoCollect.add(data)));
                 }
-                helperAdaptor = new HelperAdaptor((infoCollect));
+                helperAdaptor = new HelperAdaptor((infoCollect), getApplicationContext());
                 recyclerView.setAdapter(helperAdaptor);
             }
 
