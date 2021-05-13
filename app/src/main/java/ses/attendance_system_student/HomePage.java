@@ -29,7 +29,7 @@ public class HomePage extends AppCompatActivity {
     private DatabaseReference mSubjectRef;
     private FirebaseAuth bAuth;
     String currentUserID;
-
+    Intent intent;
     List<Pair<String, String>> infoCollect;
     RecyclerView recyclerView;
     HelperAdaptor helperAdaptor;
@@ -39,7 +39,6 @@ public class HomePage extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
 
         bAuth = FirebaseAuth.getInstance();
-
 
         if(bAuth.getCurrentUser() == null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));

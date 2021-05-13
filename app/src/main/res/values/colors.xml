@@ -14,4 +14,6 @@
     <color name="colorBackground">#333C46</color>
     <color name="colorProgressBar">#FFCE511C</color>
     <color name="colorTextView">#83898E</color>
+    <color name="green">#48f242</color>
+    <color name="red">#f10b59</color>
 </resources>

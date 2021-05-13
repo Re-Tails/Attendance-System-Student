@@ -7,10 +7,7 @@
         android:id="@+id/Join"
         app:showAsAction="never"/>
 
-    <item
-        android:title="Info"
-        android:id="@+id/delete"
-        app:showAsAction="never"/>
+
 
 
 </menu>

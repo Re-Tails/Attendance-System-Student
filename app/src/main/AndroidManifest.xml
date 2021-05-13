@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AttendanceSystemStudent">
         <activity android:name=".HomePage"></activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,9 +25,8 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity
             android:name=".FacialRecActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
