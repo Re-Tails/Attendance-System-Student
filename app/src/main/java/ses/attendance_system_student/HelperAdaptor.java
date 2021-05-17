@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -78,7 +79,7 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                 if (snapshot.exists()) {
                     currentstudentid = snapshot.child("student_id").getValue().toString();
                     currentStudentname = snapshot.child("student_name").getValue().toString();
-                   // Log.v("studentid", String.valueOf(currentstudentid));
+                    // Log.v("studentid", String.valueOf(currentstudentid));
                 }
             }
 
@@ -101,7 +102,7 @@ public class HelperAdaptor extends RecyclerView.Adapter {
 
         viewHolderClass.sub1.setText(infoCollect.second);
         // viewHolderClass.sub2.setText(infoCollect);
-       // Log.v("test4", String.valueOf(infoCollect));
+        // Log.v("test4", String.valueOf(infoCollect));
         mSubjectRef2 = FirebaseDatabase.getInstance().getReference().child("Session").child(infoCollect.first);
         mSubjectRef2.addChildEventListener(new ChildEventListener() {
             @Override
@@ -110,7 +111,7 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                 session_list.add(session);
 
 
-               // Log.v("details", String.valueOf(session.getSession_date()));
+                // Log.v("details", String.valueOf(session.getSession_date()));
             }
 
             @Override
@@ -168,7 +169,7 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                                                 //this currently doesnt work
                                             } else if (mark == 1) {
                                                 // mJoinRef.setValue(currentstudentid);
-                                               // Log.v("joining successful", "worked");
+                                                // Log.v("joining successful", "worked");
                                                 //mJoinRef= FirebaseDatabase.getInstance().getReference().child("Session").child(infoCollect.first).child(masterID).child("session_students");
                                                 //mJoinRef.child(currentstudentid).setValue(currentStudentname);
                                                 mark = 0;
@@ -220,21 +221,21 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                         if(dates.compareTo(formattedDate) == 0){
                             //Log.v("dates checker", String.valueOf(dates));
                             startTimeList.add( new Pair<String, String>(session.getSession_id(), session.getSession_start_time()));
-                           // Log.v("id checkers", String.valueOf(session.getSession_id()));
+                            // Log.v("id checkers", String.valueOf(session.getSession_id()));
                             endTimeList.add( new Pair<String, String>(session.getSession_id(), session.getSession_end_time()));
                             for( int k = 0; k < startTimeList.size(); k++) {
 
                                 String startTime = (String) startTimeList.get(k).second;
                                 String endTime = (String) endTimeList.get(k).second;
                                 //Log.v("start time comp", String.valueOf(startTime.compareTo(formattedtime)));
-                               // Log.v("end time comp", String.valueOf(endTime.compareTo(formattedtime)));
+                                // Log.v("end time comp", String.valueOf(endTime.compareTo(formattedtime)));
                                 if((startTime.compareTo(formattedtime) < 0 && endTime.compareTo(formattedtime) > 0) || (startTime.compareTo(formattedtime) == 0)) {
                                     masterID = startTimeList.get(k).first;
                                     idcodeList.add(new Pair<>(masterID, infoCollect.first));
                                     //Log.v("master subject code", String.valueOf((idcodeList.get(0).second)));
-                                  //  Log.v("master subject id", String.valueOf((idcodeList.get(0).first)));
+                                    //  Log.v("master subject id", String.valueOf((idcodeList.get(0).first)));
                                     mark = 1;
-                                   // Log.v("id of class", String.valueOf(masterID));
+                                    // Log.v("id of class", String.valueOf(masterID));
                                     break;
 
 
@@ -252,14 +253,14 @@ public class HelperAdaptor extends RecyclerView.Adapter {
                 }
                 //mSubjectRef = FirebaseDatabase.getInstance().getReference().child("Session").child(infoCollect.first);
                 //now set an onclick listener for the join button
-               // Log.v("code", String.valueOf(infoCollect.first));
+                // Log.v("code", String.valueOf(infoCollect.first));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-      //  Log.v("count", String.valueOf(infoCollectList.size()));
+        //  Log.v("count", String.valueOf(infoCollectList.size()));
         return infoCollectList.size();
     }
 

@@ -112,7 +112,7 @@ public class FacialRecActivity extends AppCompatActivity {
         done = findViewById(R.id.done);
         mImageView = findViewById(R.id.image_view);
         mImageView.setClipToOutline(true);
-        mSkip = findViewById(R.id.skip1);
+        mSkip = findViewById(R.id.skip2);
         mSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
